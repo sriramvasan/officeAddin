@@ -1,0 +1,87 @@
+<div class="container">
+    <!-- <div class="alert alert-danger alert-dismissible" role="alert" *ngIf="errorFlag">
+        {{errorMessage}}
+        <span type="button" class="close" (click)="errorFlag = !errorFlag">&times;</span>
+    </div> -->
+    <app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-warning" (click)="createPivot()">Pivot</button>
+            <button class="btn btn-danger" (click)="deletePivot()">Delete Pivot</button>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="input-group">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-primary" (click)="getRangeAddress()">Select range</button>    
+                </div>
+                <input type="text" class="form-control" placeholder="A3:B3" value="{{rangeAddress}}">
+                <!-- <input type="text" id="rowLabel" placeholder="A3:B3" value="{{rowLabelAddress}}"  class="form-control"> -->
+                <div class="input-group-prepend">
+                    <button class="btn btn-danger"(click)="clearRange()">clear range</button>
+                </div>
+            </div>
+        </div>
+        <div id="same"></div>
+    </div>
+
+    
+
+</div>
+
+<hr>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group" style="padding: 5px;" >
+                <div class="input-group" > 
+                    <label class="form-label">Column</label>
+                    <input type="text" class="form-control" [(ngModel)]="filterColumn">
+                    <label class="form-label" >Type</label>
+                    <select class="form-select" [(ngModel)]="filterType">
+                   <option value="0">Match</option>
+                   <option value="1">Arithmetic</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <div *ngIf="filterType =='1'">
+                        <select class="form-select" [(ngModel)]="filterOption">
+                            <option value="<">Less than</option>
+                            <option value=">">Greater than</option>
+                            <option value=">=">Greater than equal</option>
+                            <option value="<=">Less than equal</option>
+                            <option value="<>">Not equal to</option>
+                            </select>
+                    </div>
+                    <input type="text" class="form-control" [(ngModel)]="filterValue">
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <button class="btn btn-primary" (click)="filtering()">Filter Table</button>
+            <button class="btn btn-danger" (click)="clearFilter()">Clear Filter</button>
+        </div>
+    </div>
+</div>
+<hr>
+<!-- <div class="error-msg" *ngIf="!isCreated">*Table not present</div> -->
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <select class="form-select" id="pivotView" [(ngModel)]="pivotViewOption">
+                <option value="0">Sum of units across the region</option>
+                <option value="1">Sum of unit cost among reps</option>
+            </select>
+            
+        </div>
+    </div>
+</div>

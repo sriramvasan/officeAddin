@@ -1,0 +1,35 @@
+/* You can add global styles to this file, and also import other style files */
+button{
+    margin: 5px;
+}
+container{
+    margin: 5px;
+}
+
+ul{
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+}
+li{
+    margin: 5px;
+    padding: auto;
+    text-align: center;
+}
+.error-msg{
+    color: red;
+}
+a{
+    margin-left: 10px;
+    text-align: center;
+}
+.close{
+    margin-left: 15px;
+    color: red;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }

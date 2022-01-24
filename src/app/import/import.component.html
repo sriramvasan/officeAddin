@@ -1,0 +1,30 @@
+<div class="container">
+    <!-- <div class="alert alert-danger" role="alert" *ngIf="errorFlag">
+        {{errorMessage}}
+        <span type="button" class="close" (click)="errorFlag = !errorFlag">&times;</span>
+    </div> -->
+    <app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
+    
+    <div class="row">
+        <div class="col-xs-12">
+            <label class="custom-file">
+                <!-- <label class="custom-file-label" for="customFile">Choose file
+                </label> -->
+                <input type="file" class="custom-file-input" id="file">
+            </label>
+                <!-- <input type="file" class="form-control" id="file"> -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-outline-primary" (click)="uploadFile()">Load</button>
+            <button class="btn btn-outline-danger" (click)="deleteTable()">Delete</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-outline-info" (click)='toTable()'>Convert to table</button>
+            <button class="btn btn-outline-warning" (click)='toRange()'>Convert to range</button>
+        </div>
+    </div>
+</div> 

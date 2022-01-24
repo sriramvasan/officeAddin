@@ -1,0 +1,42 @@
+
+<div>
+    <nav  class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" routerLink="/">Ang</a>
+    <button #navbarToggler class="navbar-toggler" type="button" 
+    data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" (click)="isShown = !isShown" [attr.aria-expanded]="isShown"  aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+        <div class="collapse navbar-collapse" [ngClass]="{ 'show': isShown }" id="navbarSupportedContent">
+            <ul class="navbar-nav  nav-pills flex">
+                <li >
+                    <a routerLink="/home"
+                     routerLinkActive="active" 
+                     style="cursor: pointer;" 
+                     class="nav-link">Home</a></li>
+                <li class="nav-item" >
+                    <a routerLink="/transform"
+                     routerLinkActive="active" 
+                     style="cursor: pointer;" 
+                     class="nav-link">Transform</a></li>
+                <li class="nav-item">
+                    <a routerLink="/import"
+                        routerLinkActive = "active"
+                        style="cursor: pointer;"
+                        class="nav-link">Import </a>
+                </li> <li class="nav-item">
+                    <a routerLink="/flatten"
+                        routerLinkActive = "active"
+                        style="cursor: pointer;"
+                        class="nav-link">Flatten</a>
+                </li><li class="nav-item">
+                    <a routerLink="/multiply"
+                        routerLinkActive = "active"
+                        style="cursor: pointer;"
+                        class="nav-link">Multiply</a>
+                </li>
+            </ul>
+        </div>
+       
+    </nav>    
+</div>

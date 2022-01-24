@@ -1,0 +1,60 @@
+<div class="container">
+    <!-- <div class="alert alert-danger" role="alert" *ngIf="errorFlag">
+        {{errorMessage}}
+        <span type="button" class="close" (click)="errorFlag = !errorFlag">&times;</span>
+    </div> -->
+    <app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-primary" (click)="color()">Apply color</button>
+            <button class="btn btn-danger" (click)="clearColor()">Clear</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-primary" (click)="createTable()">Create Table</button>
+            <button class="btn btn-danger" (click)="clearTable()">Delete Table</button>
+            <!-- <div class="error-msg" *ngIf="!isCreated">*Table not present</div> -->
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <input type="text" class="form-control" #inputValue>
+            <button class="btn btn-primary" (click)="enterValue()" >Enter Value</button>
+            <div id="value"></div>
+    </div>
+</div>
+<div class="row" *ngIf="isCreated">
+    <div class="col-xs-6">
+        <button class="btn btn-primary" (click)="SortAsc()">Sort Asc</button>
+        <button class="btn btn-primary" (click)="SortDesc()">Sort Desc</button>
+        <!-- <button class="btn btn-primary" (click)="filter()">Filter</button> -->
+        <div id="same"></div>
+    </div>  
+    <div class="col-xs-6">
+        <select id="name" class="form-select">
+            <option 
+            *ngFor="let x of example;let i = index"
+            value="{{option}}"
+            >{{x}}</option>
+        </select>
+    </div>
+</div>
+</div>
+<div class="container"  >
+    
+</div>
+
+<hr>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- <button class="btn btn-primary" (click)="trial()">Trial</button> -->
+           <div id="here"></div>
+        </div>
+    </div>
+</div>
