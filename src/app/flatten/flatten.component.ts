@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
+export enum ReturnType{
+  Address = 0,
+  Range= 1,
+  Array = 2
+
+}
+
 @Component({
   selector: 'app-flatten',
   templateUrl: './flatten.component.html',
@@ -7,31 +14,30 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FlattenComponent implements OnInit {
 
+    flatteningStep :number =0;
 
-  flatteningStep :number =0;
+  rowLabelRange : Excel.Range|undefined=undefined;
+  rowLabelAddress :string|undefined= undefined;
 
-  rowLabelRange : Excel.Range=null;
-  rowLabelAddress :string=null;
+  columnLabelRange: Excel.Range |undefined = undefined;
+  columnLabelAddress :string |undefined =undefined;
 
-  columnLabelRange: Excel.Range = null;
-  columnLabelAddress :string=null;
+  dataRange:Excel.Range |undefined =undefined;
+  dataRangeAddress : string|undefined =undefined;
 
-  dataRange:Excel.Range = null;
-  dataRangeAddress : string=null;
-
-  destinationRange: Excel.Range=null;
-  destinationRangeAddress: string=null;
+  destinationRange: Excel.Range|undefined =undefined;
+  destinationRangeAddress: string|undefined =undefined;
 
   //all datas
-  rowArr :any[][];
-  colArr: any[][];
-  sourceArr : any[][];
-  destArr : any[][];
+  rowArr :any[][]=[];
+  colArr: any[][] = [];
+  sourceArr : any[][]= [];
+  destArr : any[][] =[];
 
-  numRowLabels : number;
-  numColumnLabels : number;
-  rowSize :number;
-  colSize :number;
+  numRowLabels : number =-1;
+  numColumnLabels : number =-1;
+  rowSize :number = -1;
+  colSize :number =-1;
   errorMessage : string ="Error";
   errorFlag : boolean = false;
 
@@ -41,131 +47,153 @@ export class FlattenComponent implements OnInit {
   }
 
   startFlatten(){
+    this.resetFlatten();
     this.flatteningStep++;
   }
- 
+
   async getRowLabels(){
     
-    Excel.run(async (ctx)=>{
-      this.rowLabelRange = ctx.workbook.getSelectedRange();
+   await Excel.run(async (ctx)=>{
+     let sheet = ctx.workbook.worksheets.getActiveWorksheet();
+     if(this.rowLabelAddress == undefined){
+       this.rowLabelRange = ctx.workbook.getSelectedRange();
+     }
+     else{
+       this.rowLabelRange = sheet.getRange(this.rowLabelAddress);
+     }
       this.rowLabelRange = this.rowLabelRange.getUsedRange();
       this.rowLabelRange.load()
+      await ctx.sync();
 
-      return ctx.sync().then(()=>{
-        this.rowLabelAddress = this.rowLabelRange.address 
-        this.errorFlag = false;
-      });
+      this.rowLabelAddress = (<Excel.Range>this.rowLabelRange).address
+      this.errorFlag = false;
+      console.log(this.rowLabelAddress);
+
+      return ctx.sync();
     }).catch((err)=>{
       console.log(err);
-      console.log("Unable to get row labels");
-      this.errorFlag =true;
-      this.errorMessage = "Unable to get row labels";
+      this.errorFlag= true;
+      this.errorMessage = err;
     });
   }
 
   async getColumnLabels(){
-    Excel.run(async (ctx)=>{
-      this.columnLabelRange = ctx.workbook.getSelectedRange();
+    await Excel.run(async (ctx)=>{
+      let sheet = ctx.workbook.worksheets.getActiveWorksheet();
+
+      if(this.columnLabelAddress == undefined){
+        this.columnLabelRange = ctx.workbook.getSelectedRange();
+      }
+      else{
+        this.columnLabelRange = sheet.getRange(this.columnLabelAddress);
+      }
       this.columnLabelRange = this.columnLabelRange.getUsedRange();
       this.columnLabelRange.load()
-      return ctx.sync().then(()=>{
-        this.columnLabelAddress = this.columnLabelRange.address 
-        this.errorFlag = false;
-      });
+      await ctx.sync();
+      this.columnLabelAddress = (<Excel.Range>this.columnLabelRange).address 
+      this.errorFlag = false;
+      console.log(this.columnLabelAddress);
+
+      return ctx.sync();
       
     }).catch((err)=>{
       console.log(err);
-      console.log("Unable to get column labels");
-      this.errorFlag = true;
-      this.errorMessage = "Unable to get column labels";
-    });
-
-  }
-
-  async getsourceData(){
-
-    Excel.run( async (ctx)=>{
-
-      var dataSheet = ctx.workbook.worksheets.getItem('SampleData');
-      var colLblRng = dataSheet.getRange(this.columnLabelAddress).load();
-      var rowLblRng = dataSheet.getRange(this.rowLabelAddress).load();
-
-      this.dataRange = colLblRng.getEntireColumn().getUsedRange().getIntersection(rowLblRng.getEntireRow().getUsedRange()).load('values');
-      // this.dataRange = this.columnLabelRange.getEntireColumn().getUsedRange().getIntersection(this.rowLabelRange.getEntireRow().getUsedRange()).load();
-      this.dataRange.load();
-      
-      return ctx.sync().then(()=>{
-        this.dataRangeAddress = this.dataRange.address;
-        this.colArr = colLblRng.values;
-        this.rowArr = rowLblRng.values;
-        this.sourceArr = this.dataRange.values;
-        this.numRowLabels = rowLblRng.columnCount;
-        this.numColumnLabels = colLblRng.rowCount;
-        this.rowSize = this.dataRange.rowCount;
-        this.colSize = this.dataRange.columnCount;
-        this.errorFlag = false;
-      });
-      
-    }).catch((err)=>{
-      console.log(err);
-      console.log("Unable to get source data");
-      this.errorFlag = true;
-      this.errorMessage = "Unable to get source data";
+      this.errorFlag= true;
+      this.errorMessage = err;
     });
 
   }
 
   async getDestRng(){
 
-    Excel.run(async (ctx)=>{
-      this.destinationRange = ctx.workbook.getSelectedRange();
+    await Excel.run(async (ctx)=>{
+      let sheet = ctx.workbook.worksheets.getActiveWorksheet();
+      let destRng;
+     if( this.destinationRangeAddress== undefined){
+       this.destinationRange = ctx.workbook.getSelectedRange();
+       destRng = ctx.workbook.getSelectedRange();
+     }
+     else{
+       this.destinationRange = sheet.getRange(this.destinationRangeAddress);
+     }
+      this.destinationRange = this.destinationRange.getAbsoluteResizedRange(1,1);
       this.destinationRange.load()
-      return ctx.sync().then(()=>{
-        this.destinationRangeAddress = this.destinationRange.address 
-        this.errorFlag = false;
-      });
+      await ctx.sync();
+      this.destinationRangeAddress = (<Excel.Range>this.destinationRange).address 
+      this.errorFlag = false;
+      console.log(this.destinationRangeAddress);
+      
+      return ctx.sync();
     }).catch((err)=>{
       console.log(err);
-      console.log("Unable to get destination range");
-      this.errorFlag = true;
-      this.errorMessage = "Unable to get destination range";
+      this.errorFlag= true;
+      this.errorMessage = err;
+    });
+  }
+
+  async getSourceData(){
+
+    await Excel.run( async (ctx)=>{
+      let dataSheet = ctx.workbook.worksheets.getActiveWorksheet();
+
+      let colLblRng = dataSheet.getRange(this.columnLabelAddress).load();
+      let rowLblRng = dataSheet.getRange(this.rowLabelAddress).load();
+      this.dataRange = colLblRng.getEntireColumn().getUsedRange().getIntersection(rowLblRng.getEntireRow().getUsedRange()).load('values');;
+      this.dataRange.load();
+      await ctx.sync();
+
+      (<Excel.Range>this.dataRange).select()
+      this.dataRangeAddress = (<Excel.Range>this.dataRange).address;
+      this.colArr = colLblRng.values;
+      this.rowArr = rowLblRng.values;
+      this.sourceArr = (<Excel.Range>this.dataRange).values;
+      this.numRowLabels = rowLblRng.columnCount;
+      this.numColumnLabels = colLblRng.rowCount;
+      this.rowSize = (<Excel.Range>this.dataRange).rowCount;
+      this.colSize = (<Excel.Range>this.dataRange).columnCount;
+      this.errorFlag = false;
+      console.log(this.dataRangeAddress);
+      
+      return ctx.sync();
+      
+    }).catch((err)=>{
+      console.log(err);
+      this.errorFlag= true;
+      this.errorMessage = err;
     });
   }
 
   async embed(){
-    
-    Excel.run(async (ctx)=>{
-      
-      var newcolscount = this.numColumnLabels+this.numRowLabels+1;
-      var newrowscount = this.colSize* this.rowSize;
-    
-      var rowLblPosition = 0
-      var colLblPosition = this.numRowLabels;
-      var flatSheet = ctx.workbook.worksheets.getItem("SampleData");      
-      var destinationArray = new Array(newcolscount);
-      var destRng2 = flatSheet.getRange(this.destinationRangeAddress);
 
-      destRng2.format.fill.color = 'orange';
+    await Excel.run(async (ctx)=>{
+
+      let newcolscount = this.numColumnLabels+this.numRowLabels+1;
+      let newrowscount = this.colSize* this.rowSize;
+    
+      let rowLblPosition = 0
+      let colLblPosition = this.numRowLabels;
+      let flatSheet = ctx.workbook.worksheets.getActiveWorksheet();     
+      let destinationArray = new Array(newcolscount);
+      let destRng2 = flatSheet.getRange(this.destinationRangeAddress);
+
       destRng2 = destRng2.getResizedRange(newrowscount-1,newcolscount-1);
-      // destRng2.format.fill.color = 'magenta';
-      // destRng2.format.fill.color = "lightgreen";
       
-      var sampleMatrix = []
-      for(var i=0 ;i<newrowscount;i++){
+      let sampleMatrix = []
+      for(let i=0 ;i<newrowscount;i++){
         sampleMatrix[i] = new Array(newcolscount);
       }
 
-      var samp=0;
+      let samp=0;
     
-      for(var colIndex =0; colIndex<this.colArr[0].length ;colIndex++)
+      for(let colIndex =0; colIndex<this.colArr[0].length ;colIndex++)
       {
-        for(var rowIndex = 0; rowIndex < this.rowArr.length ; rowIndex++){
+        for(let rowIndex = 0; rowIndex < this.rowArr.length ; rowIndex++){
 
-          for( var rowLabelIndex =0 ; rowLabelIndex < this.rowArr[0].length;rowLabelIndex++){
+          for( let rowLabelIndex =0 ; rowLabelIndex < this.rowArr[0].length;rowLabelIndex++){
             sampleMatrix[samp][rowLblPosition+rowLabelIndex] = this.rowArr[rowIndex][rowLabelIndex];
           }
           
-          for(var colLabelIndex =0; colLabelIndex<this.colArr.length;colLabelIndex++){
+          for(let colLabelIndex =0; colLabelIndex<this.colArr.length;colLabelIndex++){
             sampleMatrix[samp][colLblPosition+colLabelIndex] = this.colArr[colLabelIndex][colIndex];
           }
 
@@ -179,32 +207,189 @@ export class FlattenComponent implements OnInit {
       return ctx.sync()
     }).catch((err)=>{
       console.log(err);
-      console.log("Unable to flatten");
-      this.errorFlag = true;
-      this.errorMessage = "Unable to flatten";
+      this.errorFlag= true;
+      this.errorMessage = err;
     });
   }
-  
-  resetFlatten(){
-    this.flatteningStep = 0;
-    this.columnLabelAddress = null;
-    this.rowLabelAddress = null;
-    this.dataRangeAddress = null;
-    this.destinationRangeAddress = null;
-  }
 
-  nextStep(){
-    if(this.flatteningStep ===4){
-      this.embed();
-      this.flatteningStep = 0
-    }
-    else if(this.flatteningStep ===2){
-      this.getsourceData();
+  async nextStep(){
+
+    if(this.flatteningStep == 1){
+      await this.getColumnLabels();
+      console.log(this.columnLabelAddress);
       this.flatteningStep++;
     }
-    else 
-    {
-      this.flatteningStep++;}
-    
+    else if(this.flatteningStep ==2){
+      await this.getRowLabels();
+      console.log(this.rowLabelAddress);
+      this.getSourceData();
+      this.flatteningStep++;
+    }
+
+    else if(this.flatteningStep ==3){
+     this.getSourceData();
+      console.log(this.sourceArr);
+      this.flatteningStep++;
+    }
+    else if(this.flatteningStep ==4){
+      console.time("Flatten");
+      await this.getDestRng();
+      await this.embed();
+      console.timeEnd("Flatten");
+      console.log(this.destinationRangeAddress);
+      // this.flatteningStep = 0;
+    }
+    else{
+      this.flatteningStep =0;
+      return;
+    }
   }
+
+  resetFlatten(){
+    this.flatteningStep = 0;
+    this.columnLabelAddress = undefined;
+    this.rowLabelAddress = undefined;
+    this.dataRangeAddress = undefined;
+    this.destinationRangeAddress = undefined;
+  }
+
+  static async getsourceData(rowLabelAddress?: string, colLabelAddress?:string,sourceSheetName:string|undefined = undefined ,returnType:ReturnType = ReturnType.Address){
+
+    let dataRngAddress :string ='';
+    let sourceArray :any[][] = [];
+    let dataRng : Excel.Range|undefined = undefined;
+
+    await Excel.run( async (ctx)=>{
+      let dataSheet;
+      if(sourceSheetName== undefined){
+
+        dataSheet = ctx.workbook.worksheets.getActiveWorksheet();
+      }else{
+        dataSheet = ctx.workbook.worksheets.getItem(sourceSheetName);
+      }
+
+      
+      let colLblRng = dataSheet.getRange(colLabelAddress).load();
+      // colLblRng.select();
+      let rowLblRng = dataSheet.getRange(rowLabelAddress).load();
+
+      // dataRng = colLblRng.getEntireColumn().getUsedRange().getIntersection(rowLblRng.getEntireRow().getUsedRange()).load('values');
+      dataRng = colLblRng.getEntireColumn().getUsedRange().getIntersection(rowLblRng.getEntireRow()).load('values');
+      dataRng.load();
+      
+      await ctx.sync();
+
+      dataRngAddress = dataRng.address;
+      sourceArray = dataRng.values;
+      return ctx.sync();
+    })
+    .catch((err)=>{
+      console.log(err);
+    });
+
+    if(returnType==0) {
+      return dataRngAddress;
+    }
+    else if(returnType ==1){ 
+      return sourceArray;
+    }
+    else{
+      return dataRng;
+    }
+
+  }
+
+  static async Flatten(rowLblAddress :string , colLbladdress : string,destAddress:string,sourceSheetName:string|undefined = undefined,destSheetName:string|undefined = undefined ){
+    
+    let flag = false;
+
+    await Excel.run(async ctx=>{
+      let sheet;
+      if(sourceSheetName == undefined){
+
+        sheet = ctx.workbook.worksheets.getActiveWorksheet();
+      }else{
+        sheet = ctx.workbook.worksheets.getItem(sourceSheetName);
+      }
+
+      let colLblRng = sheet.getRange(colLbladdress);
+      // colLblRng = colLblRng.getRowsAbove();
+
+      let rowLblRng = sheet.getRange(rowLblAddress);
+
+      let dataRngAddress = await FlattenComponent.getsourceData(rowLblAddress, colLbladdress,sourceSheetName,ReturnType.Address) as string;
+      let dataRng = sheet.getRange(dataRngAddress);
+
+      colLblRng.load(['rowCount','values']);
+      rowLblRng.load(['columnCount','values']);
+      dataRng.load(['rowCount','columnCount','values']);
+
+      await ctx.sync();
+
+      let numRowLbls = rowLblRng.columnCount;
+      let numCollbls = colLblRng.rowCount;
+      let rowSize = dataRng.rowCount;
+      let colSize = dataRng.columnCount;
+
+      let colArray = colLblRng.values;
+      let rowArray = rowLblRng.values;
+      let sourceArray = dataRng.values;
+
+      // console.log(sourceArray);
+
+      let newcolscount = numCollbls+numRowLbls+1;
+      let newrowscount = colSize* rowSize;
+
+      let rowLblPosition = 0
+      let colLblPosition = numRowLbls;
+
+      let flatSheet;
+      if(destSheetName === undefined){
+        flatSheet = ctx.workbook.worksheets.getActiveWorksheet();
+      }
+      else{
+        flatSheet = ctx.workbook.worksheets.getItem(destSheetName);     
+      }
+
+      let destRng = flatSheet.getRange(destAddress);
+      destRng = destRng.getResizedRange(newrowscount-1,newcolscount-1);
+
+      let sampleMatrix = []
+      for(let i=0 ;i<newrowscount;i++){
+        sampleMatrix[i] = new Array(newcolscount);
+      }
+
+      let samp=0;
+    
+      for(let colIndex =0; colIndex<colArray[0].length ;colIndex++)
+      {
+        for(let rowIndex = 0; rowIndex < rowArray.length ; rowIndex++){
+
+          for( let rowLabelIndex =0 ; rowLabelIndex < rowArray[0].length;rowLabelIndex++){
+            sampleMatrix[samp][rowLblPosition+rowLabelIndex] = rowArray[rowIndex][rowLabelIndex];
+          }
+          
+          for(let colLabelIndex =0; colLabelIndex<colArray.length;colLabelIndex++){
+            sampleMatrix[samp][colLblPosition+colLabelIndex] = colArray[colLabelIndex][colIndex];
+          }
+
+          sampleMatrix[samp][numCollbls+numRowLbls] = sourceArray[rowIndex][colIndex];
+          samp++;  
+        }
+      }
+
+      destRng.values = sampleMatrix;
+      flag = true;
+      return ctx.sync();
+    })
+    .catch(err =>{
+      console.log(err);
+
+      flag = false;
+    })
+
+    return flag;
+  }
+
+
 }

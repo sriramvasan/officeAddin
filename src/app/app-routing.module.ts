@@ -16,8 +16,8 @@ const routes :Routes = [
   {path :'import',component:ImportComponent},
   {path :'flatten',component:FlattenComponent},
   {path: 'multiply',component:MultiplyComponent},
-  {path: '' , redirectTo:'/home',pathMatch:'full'},
-  {path : '**' , redirectTo:'/default', pathMatch:'full'}
+  {path: '' , redirectTo:'/home',pathMatch:'full'}
+  ,{path : '**' , redirectTo:'/default', pathMatch:'full'}
 ]
 
 @NgModule({

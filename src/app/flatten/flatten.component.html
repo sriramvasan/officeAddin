@@ -1,55 +1,43 @@
+<app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
 <div class="container">
-    <!-- <div class="alert alert-danger" role="alert" *ngIf="errorFlag">
-        {{errorMessage}}
-        <span type="button" class="close" (click)="errorFlag = !errorFlag">&times;</span>
-    </div> -->
-    <app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
-
-    <div class="row" *ngIf="flatteningStep  == 0">
+    <div class="row" *ngIf="flatteningStep===0">
         <div class="col-xs-12">
-            <h1>Flattening Section</h1>
+            <h4>Flattening</h4>
             <button class="btn btn-secondary" (click)="startFlatten()">Start Flattening</button>
+            <!-- <button class="btn btn-outline-danger" (click)="trying()">Run</button> -->
+            <!-- <button class="btn btn-outline-danger" (click)="runFlatten()">Run</button> -->
         </div>
     </div>
-    <div class="row" *ngIf="flatteningStep  == 1">
-        <div class="col-xs-12">
-            <h1> Step 1 Loading column labels</h1>
-            <p>Select the range you want to load as column labels and click the next button</p>
-            <input type="text" id="colLabel" placeholder="A3:B3" value="{{columnLabelAddress}}" class="form-control">
-            <button class="btn btn-primary" (click)="getColumnLabels()">Load column Labels</button>
-            <button class="btn btn-warning" (click)="resetFlatten()">Reset</button>
-            <button class="btn btn-success" (click)="nextStep()">Next <span>&#8594; </span> </button>
-        </div>
+    <div *ngIf="flatteningStep>=1">
+        <label class="col-xs-5 label">Column Label</label>
+        <input type="text" id="colLabel" value="{{columnLabelAddress}}" class="col-xs-5 input" readonly>          
     </div>
-    <div class="row" *ngIf="flatteningStep == 2">
-        <div class="col-xs-12">
-            <h1> Step 2 Loading row labels </h1>
-            <p>Select the range you want to load as row labels and click the next button</p>
-            <input type="text" id="rowLabel" placeholder="A3:B3" value="{{rowLabelAddress}}"  class="form-control">
-            <button class="btn btn-primary"  (click)="getRowLabels()">Load Row Labels</button>
-            <button class="btn btn-warning" (click)="resetFlatten()">Reset</button>
-            <button class="btn btn-success" (click)="nextStep()">Next <span>&#8594; </span> </button>
-        </div>
+
+    <div  *ngIf="flatteningStep>=2">
+        <label class="col-xs-5 label">Row Label</label>
+        <input type="text" id="rowLabel"  value="{{rowLabelAddress}}"  class="col-xs-5 input" readonly>
     </div>
-    <div class="row" *ngIf="flatteningStep == 3">
-        <div class="col-xs-12">
-            <h1> Step 3 Loading data range</h1>
-            <p>Select the range you want to load as data source and click the next button</p>
-            <input type="text" id="dataLabel" placeholder="A3:B3" value="{{dataRangeAddress}}" class="form-control">
-            <button class="btn btn-primary"  (click)="getsourceData()">Load Data Range</button>
-            <button class="btn btn-warning" (click)="resetFlatten()">Reset</button>
-            <button class="btn btn-success" (click)="nextStep()">Next <span>&#8594; </span> </button>
-        </div>
+
+    <div *ngIf="flatteningStep>=3">
+        <label class="col-xs-5 label">Data Label</label>
+        <input type="text" id="dataLabel"  value="{{dataRangeAddress}}" class="col-xs-5 input" readonly>
+
     </div>
-    <div class="row" *ngIf="flatteningStep == 4">
-        <div class="col-xs-12">
-            <h1> Step 4 Loading destination cell</h1>
-            <p>Select the range where you want to populate the flattened data and click the finish button</p>
-            <input type="text" id="destLabel" placeholder="A3:B3" value="{{destinationRangeAddress}}" class="form-control">
-            <button class="btn btn-primary"  (click)="getDestRng()">Load destination Range</button>
-            <button class="btn btn-warning" (click)="resetFlatten()">Reset</button>
-            <button class="btn btn-success" (click)="nextStep()">Finish</button>
-        </div>
+
+    <div *ngIf="flatteningStep>=4">
+        <label class="col-xs-5 label">Destination</label>
+        <input type="text" id="destLabel"  value="{{destinationRangeAddress}}" class="col-xs-5 input" readonly>
+
     </div>
+    <button class="btn btn-warning" *ngIf="flatteningStep >0" (click)="resetFlatten()">Reset</button>
+    <button class="btn btn-success" *ngIf="flatteningStep >0 " (click)="nextStep()">
+       <div *ngIf="flatteningStep<4">
+           Next 
+           <span>&#8594; </span> 
+       </div> 
+       <div *ngIf="flatteningStep===4">Finish</div>
+    </button>
+
+ 
 </div>
-<div id="same"></div>
+   
