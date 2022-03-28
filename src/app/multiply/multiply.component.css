@@ -1,0 +1,14 @@
+ul{
+    list-style-type:none;
+}
+.listitem{
+    text-align: left;
+    border: 1px solid seagreen;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #2d2d2d;
+    color: white;
+}
+h5{
+    text-align: center;
+}

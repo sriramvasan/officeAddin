@@ -1,32 +1,21 @@
+<div class="container">
+    <app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
+</div>
 
 <div class="container">
-    <!-- <div class="alert alert-danger" role="alert" *ngIf="errorFlag">
-        {{errorMessage}}
-        <span type="button" class="close" (click)="errorFlag = !errorFlag">&times;</span>
-    </div> -->
-    <app-alert [message]='errorMessage' *ngIf="errorFlag" (close)="errorFlag = !errorFlag" ></app-alert>
-
-    <h1>Multiply Section</h1>
+    <h1> Multiple Section Updated</h1>
     <div class="row">
-        <div class="col-xs-12" *ngIf="isLoader">
-            <button class="btn btn-primary" (click)="getRange()">Get Range </button>
-            <button class="btn btn-primary" (click)="nextRange()">Next Range {{currStepIndex+2}}</button>
-            <button class="btn btn-warning" (click)="cancelLoad()">Cancel</button>
-            <input type="text" value="{{acquiredArray}}" placeholder="A3:B3" class="form-control">
+        <div *ngIf="selectedRanges.length >0">
+            <h5>Selected Ranges</h5>
+            <ul >  
+                <li class="listitem" *ngFor="let selectedRange of selectedRanges">{{selectedRange}}</li>
+            </ul>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12" *ngIf="!isLoader">
-            <button class="btn btn-primary" (click)="getDestRange()">Select Destination Range</button>
-            <input type="text" placeholder="A3:B3" class="form-control" value="{{destinationRangeAddress}}">
-            <button class="btn btn-warning" (click)="cancelLoad()">Cancel</button>
-            <button class="btn btn-success" (click)="multiplyRanges()">Multiply</button>
-        </div>
-    </div>
-    <div class="row">
+        <hr>
         <div class="col-xs-12">
-            <button class="btn btn-outline-danger" (click)="reset()">Reset</button>
+            <button class="btn btn-outline-primary" (click)="LoadRanges()">Range Load</button>
+            <button class="btn btn-success" *ngIf="selectedRanges.length > 1" (click)="multipy()">Multiply</button>
+            <button class="btn btn-warning" (click)="reset()">Reset</button>
         </div>
     </div>
 </div>
-<hr>
